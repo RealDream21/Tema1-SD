@@ -15,8 +15,10 @@ void merge_function(int* const, const int, const int, const int);
 bool check_sort(int*); ///1 daca e sortat bine, 0 daca nu e
 void radixSort(int* const, const int);///baza de fapt merge pana la base - 1
 void heapSort(int * const);
-void buildHeap(int * const, const int);
-void heapify(int * const); ///compar cu copiii si schimb cu cel mai mic/cel mai mare in functie de maxHeap sau minHeap
+void buildHeap(int * const);
+void heapify(int * const, const int); ///compar cu copiii si schimb cu cel mai mic/cel mai mare in functie de maxHeap sau minHeap
+void pushToHeap(int * const, const int, const int);
+void rearrangeHeap(int * const v, const int sfarsit);
 void introSort(int * const); ///!!!!
 void insertionSort(int * const);
 void copyv(int * const, const int * const);
@@ -53,7 +55,9 @@ int main()
         cin >> vcheck[i];
     copyv(v1, vcheck);
     sort(vcheck, vcheck + n);
-    insertionSort(v1);
+   // buildHeap(v1); // construieste un heap
+    heapSort(v1);
+    cout << check_sort(v1);
     show(v1);
 
 
@@ -127,12 +131,10 @@ void radixSort(int * const v, const int base){
 void insertionSort(int * const v){
     int key, j;
 
-    for(int i = 1; i < n; i++)
-    {
+    for(int i = 1; i < n; i++){
         j = i - 1;
         key = v[i];
-        while(j >= 0 && key < v[j])
-        {
+        while(j >= 0 && key < v[j]){
             v[j + 1] = v[j];
             j--;
         }
@@ -140,6 +142,62 @@ void insertionSort(int * const v){
     }
 
 }
+
+void heapify(int * const v, int i){
+    while(i){
+        int tata = (i - 1)/2;
+        if(v[tata] < v[i]){
+            swap(v[tata], v[i]);
+            i = tata;
+        }
+        else break;
+    }
+}
+
+void rearrangeHeap(int * const v, const int sfarsit){
+    int i = 0;
+    while(i * 2 + 2 <= sfarsit){
+        int fiu_st = i * 2 + 1;
+        int fiu_dr = i * 2 + 2;
+        if (v[fiu_st] > v[fiu_dr]){
+            swap(v[i], v[fiu_st]);
+            i = fiu_st;
+        }
+        else if(v[fiu_dr] > v[fiu_st]){
+            swap(v[i], v[fiu_dr]);
+            i = fiu_dr;
+        }
+        else break;
+    }
+}
+
+void buildHeap(int * const v){
+    int* aux;
+    aux = new int[n];
+    for(int i = 0; i < n; i++)
+        pushToHeap(aux, v[i], i);
+    copyv(v, aux);
+    delete[] aux;
+}
+
+void pushToHeap(int * const v, const int x, int curentIndex){
+    v[curentIndex] = x;
+    heapify(v, curentIndex);
+}
+
+void heapSort(int * const v){
+    buildHeap(v);
+    show(v);
+    cout << endl;
+    int sfarsit = n - 1;
+    while(sfarsit > 0){
+        swap(v[0], v[sfarsit--]);
+        rearrangeHeap(v, sfarsit);
+    }
+    if(v[0] > v[1])
+        swap(v[0], v[1]);
+}
+
 
 void show(const int * const v){
     for(int i = 0; i < n; i++)
