@@ -13,6 +13,8 @@ void merge_sort(int* const, const int, const int);
 void merge_function(int* const, const int, const int, const int);
 bool check_sort(int*); ///1 daca e sortat bine, 0 daca nu e
 void radixSort(int* const, const int);///baza de fapt merge pana la base - 1
+void heapSort(int * const);
+void insertionSort(int * const);
 void copyv(int * const, const int * const);
 void show(const int * const v);
 
@@ -22,6 +24,12 @@ clock_t c_end = clock();
 long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
     cout << time_elapsed_ms/1000;
 ---- timpul in secunde.ms
+*/
+
+/*cazuri particulare si observatii:
+    la radix sort nu merge in toate bazele!!!
+    idee de pus la proiect: pentru fiecare test input care este best case pt radix sort!!(adica iau o gramada de baze si vad care baza imi da timpul cel mai bun)
+
 */
 
 int main()
@@ -38,7 +46,11 @@ int main()
     for(int i = 0; i < n; i++)
         cin >> vcheck[i];
     copyv(v1, vcheck);
-    copyv(v2, vcheck);
+    sort(vcheck, vcheck + n);
+    insertionSort(v1);
+    show(v1);
+
+
     return 0;
 }
 
@@ -104,6 +116,23 @@ void radixSort(int * const v, const int base){
         p *= base;
     }
     return;
+}
+
+void insertionSort(int * const v){
+    int key, j;
+
+    for(int i = 1; i < n; i++)
+    {
+        j = i - 1;
+        key = v[i];
+        while(j >= 0 && key < v[j])
+        {
+            v[j + 1] = v[j];
+            j--;
+        }
+        v[j + 1] = key;
+    }
+
 }
 
 void show(const int * const v){
