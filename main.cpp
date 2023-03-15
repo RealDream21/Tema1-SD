@@ -8,15 +8,21 @@ const long long VMAX = 1e7;
 int n;
 
 int *vcheck;
-
+//https://www.youtube.com/watch?v=2DmK_H7IdTo
+//https://www.geeksforgeeks.org/introsort-or-introspective-sort/
 void merge_sort(int* const, const int, const int);
 void merge_function(int* const, const int, const int, const int);
 bool check_sort(int*); ///1 daca e sortat bine, 0 daca nu e
 void radixSort(int* const, const int);///baza de fapt merge pana la base - 1
 void heapSort(int * const);
+void buildHeap(int * const, const int);
+void heapify(int * const); ///compar cu copiii si schimb cu cel mai mic/cel mai mare in functie de maxHeap sau minHeap
+void introSort(int * const); ///!!!!
 void insertionSort(int * const);
 void copyv(int * const, const int * const);
 void show(const int * const v);
+
+
 
 /*
 clock_t c_start = clock();
