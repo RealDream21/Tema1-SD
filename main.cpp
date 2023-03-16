@@ -2,28 +2,35 @@
 #include <ctime>
 #include <vector>
 #include <bits/stdc++.h>
+#include <fstream>
 using namespace std;
+
+ifstream fin("testcase0");
+//ofstream fout("");
 
 const long long VMAX = 1e7;
 int n;
 
 int *vcheck;
-//https://www.youtube.com/watch?v=2DmK_H7IdTo
-//https://www.geeksforgeeks.org/introsort-or-introspective-sort/
-void merge_sort(int* const, const int, const int);
-void merge_function(int* const, const int, const int, const int);
-bool check_sort(int*); ///1 daca e sortat bine, 0 daca nu e
-void radixSort(int* const, const int);///baza de fapt merge pana la base - 1
+
+///sortari:
+void merge_sort(int * const, const int, const int);
+void shellsort(const int * v);
+void radixSort(int * const, const int);///baza de fapt merge pana la base - 1
 void heapSort(int * const);
+void shellSort(int * const, const int);
+void introSort(int * const); ///!!!!
+void insertionSort(int * const);
+///functii de ajutor
 void buildHeap(int * const);
 void heapify(int * const, const int); ///compar cu copiii si schimb cu cel mai mic/cel mai mare in functie de maxHeap sau minHeap
 void pushToHeap(int * const, const int, const int);
-void rearrangeHeap(int * const v, const int sfarsit);
-void introSort(int * const); ///!!!!
-void insertionSort(int * const);
-void shellSort(int * const, const int);
+void rearrangeHeap(int * const v, const int);
+void merge_function(int * const, const int, const int, const int);
+///testare, copiere, chestii
+bool check_sort(int*); ///1 daca e sortat bine, 0 daca nu e
 void copyv(int * const, const int * const);
-void show(const int * const v);
+void show(const int * const);
 
 
 
@@ -43,23 +50,28 @@ long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
 
 int main()
 {
-    cin >> n;
+    fin >> n;
     int *v1, *v2, *v3, *v4, *v5;
-    v1 = new int[VMAX]; //radix sort
-    v2 = new int[VMAX]; //merge sort
-    v3 = new int[VMAX]; //shell sort
-    v4 = new int[VMAX]; //sort extra 1
-    v5 = new int[VMAX]; //sort extra 2
-    vcheck = new int[VMAX]; //sortarea standard c++
+    v1 = new int[n]; //radix sort
+    v2 = new int[n]; //merge sort
+    v3 = new int[n]; //shell sort
+    v4 = new int[n]; //sort extra 1
+    v5 = new int[n]; //sort extra 2
+    vcheck = new int[n]; //sortarea standard c++
 
     for(int i = 0; i < n; i++)
-        cin >> vcheck[i];
+        fin >> vcheck[i];
+
     copyv(v1, vcheck);
     sort(vcheck, vcheck + n);
-   // buildHeap(v1); // construieste un heap
+    clock_t c_start = clock();
     radixSort(v1, 1024);
-    cout << check_sort(v1) << endl;
-    show(v1);
+    clock_t c_end = clock();
+    long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
+    cout << time_elapsed_ms/1000;
+
+
+    cout << check_sort(vcheck) << endl;
 
 
     return 0;
@@ -88,7 +100,6 @@ void merge_function(int * const v, const int st, const int mij, const int dr){
     }
 }
 
-
 void merge_sort(int * const v, const int st, const int dr){
     if(st < dr){
         int mij = (st + dr)/2;
@@ -111,7 +122,7 @@ void copyv(int * const v, const int * const aux){
 
 void radixSort(int * const v, const int base){
     vector<vector<int>> buckets(base);
-    int p = 1;
+    long long p = 1;
     while(buckets[0].size() != n){
         for(int i = 0; i < base; i++)
             buckets[i].clear();
@@ -126,8 +137,10 @@ void radixSort(int * const v, const int base){
         }
         p *= base;
     }
+    insertionSort(v);
     return;
 }
+
 
 void insertionSort(int * const v){
     int key, j;
@@ -188,8 +201,6 @@ void pushToHeap(int * const v, const int x, int curentIndex){
 
 void heapSort(int * const v){
     buildHeap(v);
-    show(v);
-    cout << endl;
     int sfarsit = n - 1;
     while(sfarsit > 0){
         swap(v[0], v[sfarsit--]);
@@ -199,19 +210,18 @@ void heapSort(int * const v){
         swap(v[0], v[1]);
 }
 
-
 void show(const int * const v){
     for(int i = 0; i < n; i++)
         cout << v[i] << " ";
 }
 
-void shellSort(int * const v, const int gap){
-    while(gap != 0){
-
-
-
-
+void shellsort(int * v){
+    int gap = 2;
+    while(n/gap){
+        int gap_size = n/gap;
+        for(int i = 0; i + gap_size < n; i++)
+            if(v[i] > v[i + gap_size])
+                swap(v[i], v[i + gap_size]);
+        gap *= 2;
     }
-
-
 }
