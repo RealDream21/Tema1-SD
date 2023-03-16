@@ -68,7 +68,7 @@ int main()
     radixSort(v1, 1024);
     clock_t c_end = clock();
     long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
-    cout << time_elapsed_ms/1000;
+    cout << time_elapsed_ms/1000 << endl;
 
 
     cout << check_sort(vcheck) << endl;
@@ -137,7 +137,6 @@ void radixSort(int * const v, const int base){
         }
         p *= base;
     }
-    insertionSort(v);
     return;
 }
 
