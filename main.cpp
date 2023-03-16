@@ -21,6 +21,7 @@ void pushToHeap(int * const, const int, const int);
 void rearrangeHeap(int * const v, const int sfarsit);
 void introSort(int * const); ///!!!!
 void insertionSort(int * const);
+void shellSort(int * const, const int);
 void copyv(int * const, const int * const);
 void show(const int * const v);
 
@@ -56,8 +57,8 @@ int main()
     copyv(v1, vcheck);
     sort(vcheck, vcheck + n);
    // buildHeap(v1); // construieste un heap
-    heapSort(v1);
-    cout << check_sort(v1);
+    radixSort(v1, 1024);
+    cout << check_sort(v1) << endl;
     show(v1);
 
 
@@ -202,4 +203,15 @@ void heapSort(int * const v){
 void show(const int * const v){
     for(int i = 0; i < n; i++)
         cout << v[i] << " ";
+}
+
+void shellSort(int * const v, const int gap){
+    while(gap != 0){
+
+
+
+
+    }
+
+
 }
