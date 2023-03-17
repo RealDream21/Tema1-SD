@@ -14,13 +14,13 @@ int n;
 int *vcheck;
 
 ///sortari:
-void shellSort(const int * v);
 void radixSort(int * const, const int);///baza de fapt merge pana la base - 1
 void heapSort(int * const);
 void shellSort(int * const);
 void introSort(int * const); ///!!!!
 void insertionSort(int * const);
 void mergeSort(int * const);
+void quickSort(int * const, const int, const int);
 ///functii de ajutor
 void merge_sort(int * const, const int, const int);
 void buildHeap(int * const);
@@ -28,6 +28,8 @@ void heapify(int * const, const int); ///compar cu copiii si schimb cu cel mai m
 void pushToHeap(int * const, const int, const int);
 void rearrangeHeap(int * const v, const int);
 void merge_function(int * const, const int, const int, const int);
+int pivotSelect(int * const, const int, const int);
+int median3(int * const, const int, const int, const int);
 ///testare, copiere, chestii
 bool check_sort(int*); ///1 daca e sortat bine, 0 daca nu e
 void copyv(int * const, const int * const);
@@ -46,7 +48,7 @@ long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
 /*cazuri particulare si observatii:
     la radix sort nu merge in toate bazele!!!
     idee de pus la proiect: pentru fiecare test input care este best case pt radix sort!!(adica iau o gramada de baze si vad care baza imi da timpul cel mai bun)
-
+    teste: 1, 2, 3 + numere crescatoare, numere toate identice, numere descrescatoare
 */
 
 int main()
@@ -67,12 +69,11 @@ int main()
     sort(vcheck, vcheck + n);
 
     clock_t c_start = clock();
-    shellSort(v1);
+    quickSort(v1, 0, n - 1);
     clock_t c_end = clock();
     long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
     cout << endl;
     cout << time_elapsed_ms/1000 << endl;
-
 
     cout << check_sort(v1) << endl;
 
@@ -236,4 +237,54 @@ void shellSort(int * v){
                 swap(v[i], v[i + gap_size]);
         gap *= 2;
     }
+}
+/*
+void quickSort(int * const v, const int st, const int dr){
+    if(st < dr){
+        int m = (st + dr)/2;
+        //int pivot = median3(v, st, m, dr);
+        //swap(v[pivot], v[st]);
+        swap(v[st], v[m]);
+        int i = st, j = dr, d = 0;
+        while(i <= j){
+            if(v[i] > v[j]){
+                swap(v[i], v[j]);
+                d = 1 - d;
+            }
+            i += d;
+            j -= 1 - d;
+        }
+    quickSort(v, st, i - 1);
+    quickSort(v, i + 1, dr);
+    }
+}*/
+
+void quickSort(int * const v, const int st, const int dr){
+    if(st < dr){
+        int m = (st + dr)/2;
+        int pivot = dr;
+        int i = st, j = dr;
+        while(i <= j){
+            while(v[i] < v[pivot]) i++;
+            while(v[j] > v[pivot]) j--;
+            if(i <= j){
+                swap(v[i], v[j]);
+                i++;
+                j--;
+            }
+        }
+        quickSort(v, st, j);
+        quickSort(v, i, dr);
+    }
+}
+
+
+inline int median3(int * const v, const int pos1, const int pos2, const int pos3){
+    if(pos3 - pos1 + 1 < 3) return pos1;
+    if(v[pos1] < v[pos2] && v[pos2] < v[pos3])
+        return pos2;
+    else if(v[pos1] < v[pos3] && v[pos1] > v[pos2])
+        return pos1;
+    else
+        return pos3;
 }
