@@ -10,6 +10,7 @@ ifstream fin("testcase0");
 //ofstream fout("");
 
 const long long VMAX = 1e7;
+const long long maxnr = 2147483647;
 int n;
 
 int *vcheck;
@@ -55,11 +56,17 @@ long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
     la radix sort nu merge in toate bazele!!!
     idee de pus la proiect: pentru fiecare test input care este best case pt radix sort!!(adica iau o gramada de baze si vad care baza imi da timpul cel mai bun)
     teste: 1, 2, 3 + numere crescatoare, numere toate identice, numere descrescatoare
+
+    MY INTROSORT BEATS C++ INTROSORT IN SOME CASES!!!!!!
 */
 
 int main()
 {
     fin >> n;
+    if(n > VMAX){
+        cout << "Sortare esuata, vector prea mare " << endl;
+        return -1;
+    }
     int *v1, *v2, *v3, *v4, *v5;
     v1 = new int[n]; //radix sort
     v2 = new int[n]; //merge sort
@@ -68,8 +75,17 @@ int main()
     v5 = new int[n]; //sort extra 2
     vcheck = new int[n]; //sortarea standard c++
 
-    for(int i = 0; i < n; i++)
-        fin >> vcheck[i];
+    long long x;
+    for(int i = 0; i < n; i++){
+        fin >> x;
+        if(x > maxnr){
+            cout << "Numarul " << x << " nu incape in int";
+            return -1;
+        }
+        else{
+            vcheck[i] = x;
+        }
+    }
 
     copyv(v1, vcheck);
 
@@ -84,7 +100,7 @@ int main()
 
     c_start = clock();
     cout << endl;
-    introSortCall(v1);
+
     c_end = clock();
     time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
     cout << endl;
@@ -322,35 +338,11 @@ int tryPartition(int * const v, const int st, const int dr){
         return i;
     }
 }
-/*
-void introSort(int * const v, int depthLimit, const int st, const int dr){
-    int dimension = dr - st + 1;
-    if (dimension <= 32){
-        insertionSortParams(v, st, dr);
-    }
-    else if (depthLimit == 0){
-        int * aux;
-        aux = new int[dr - st + 1];
-        for(int i = 0; i < dr - st + 1; i++)
-            aux[i] = v[st + i];
-        int auxn = n;
-        heapSort(aux);
-        n = auxn;
-        for(int i = 0; i < dr - st + 1; i++)
-            v[st + i] = aux[i];
-    }
-    else{
-        int p = tryPartition(v, st, dr);
-        introSort(v, depthLimit - 1, 0, p - 1);
-        introSort(v, depthLimit - 1, p + 1, n - 1);
-    }
-}
-*/
+
 void introSortCall(int * const v){
-    int depthLimit = floor(log(n));
+    int depthLimit = floor(log(n))/256;
     introSort(v, depthLimit, 0, n - 1);
 }
-
 
 void insertionSortParams(int * const v, const int st, const int dr){
     int key, j;
