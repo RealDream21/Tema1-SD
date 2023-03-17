@@ -261,8 +261,10 @@ void quickSort(int * const v, const int st, const int dr){
 
 void quickSort(int * const v, const int st, const int dr){
     if(st < dr){
-        int m = (st + dr)/2;
-        int pivot = dr;
+        int m = (dr - st)/2 + st;
+        int pivot = median3(v, st, m, dr);
+        swap(v[pivot], v[st]);
+        pivot = st;
         int i = st, j = dr;
         while(i <= j){
             while(v[i] < v[pivot]) i++;
