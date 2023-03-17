@@ -3,6 +3,7 @@
 #include <vector>
 #include <bits/stdc++.h>
 #include <fstream>
+#include <cmath>
 using namespace std;
 
 ifstream fin("testcase0");
@@ -17,10 +18,12 @@ int *vcheck;
 void radixSort(int * const, const int);///baza de fapt merge pana la base - 1
 void heapSort(int * const);
 void shellSort(int * const);
-void introSort(int * const); ///!!!!
+void introSort(int * const, const int, const int, const int); ///!!!!
 void insertionSort(int * const);
 void mergeSort(int * const);
 void quickSort(int * const, const int, const int);
+void insertionSortParams(int * const, const int, const int);
+void heapSortParams(int * const, const int, const int);
 ///functii de ajutor
 void merge_sort(int * const, const int, const int);
 void buildHeap(int * const);
@@ -28,13 +31,14 @@ void heapify(int * const, const int); ///compar cu copiii si schimb cu cel mai m
 void pushToHeap(int * const, const int, const int);
 void rearrangeHeap(int * const v, const int);
 void merge_function(int * const, const int, const int, const int);
-int pivotSelect(int * const, const int, const int);
 int median3(int * const, const int, const int, const int);
+int partitionPoint(int * const, const int, const int);
+int tryPartition(int * const, const int, const int);
 ///testare, copiere, chestii
 bool check_sort(int*); ///1 daca e sortat bine, 0 daca nu e
 void copyv(int * const, const int * const);
 void show(const int * const);
-
+void introSortCall(int * const);
 
 
 /*
@@ -66,14 +70,23 @@ int main()
         fin >> vcheck[i];
 
     copyv(v1, vcheck);
-    sort(vcheck, vcheck + n);
 
-    clock_t c_start = clock();
-    quickSort(v1, 0, n - 1);
-    clock_t c_end = clock();
-    long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
+    long double time_elapsed_ms;
+    clock_t c_start, c_end;
+
+    c_start = clock();
+    sort(vcheck, vcheck + n);
+    c_end = clock();
+    time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
+    cout << time_elapsed_ms/1000 << "<--c++ sort" << endl;
+
+    c_start = clock();
+    introSortCall(v1);
+    c_end = clock();
+    time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
     cout << endl;
-    cout << time_elapsed_ms/1000 << endl;
+    cout << time_elapsed_ms/1000 << "<--mysort" << endl;
+
 
     cout << check_sort(v1) << endl;
 
@@ -238,26 +251,8 @@ void shellSort(int * v){
         gap *= 2;
     }
 }
-/*
-void quickSort(int * const v, const int st, const int dr){
-    if(st < dr){
-        int m = (st + dr)/2;
-        //int pivot = median3(v, st, m, dr);
-        //swap(v[pivot], v[st]);
-        swap(v[st], v[m]);
-        int i = st, j = dr, d = 0;
-        while(i <= j){
-            if(v[i] > v[j]){
-                swap(v[i], v[j]);
-                d = 1 - d;
-            }
-            i += d;
-            j -= 1 - d;
-        }
-    quickSort(v, st, i - 1);
-    quickSort(v, i + 1, dr);
-    }
-}*/
+
+
 
 void quickSort(int * const v, const int st, const int dr){
     if(st < dr){
@@ -280,7 +275,6 @@ void quickSort(int * const v, const int st, const int dr){
     }
 }
 
-
 inline int median3(int * const v, const int pos1, const int pos2, const int pos3){
     if(pos3 - pos1 + 1 < 3) return pos1;
     if(v[pos1] < v[pos2] && v[pos2] < v[pos3])
@@ -290,3 +284,133 @@ inline int median3(int * const v, const int pos1, const int pos2, const int pos3
     else
         return pos3;
 }
+int partitionPoint(int * const v, const int st, const int dr){
+    if(st < dr){
+        int m = (dr - st)/2 + st;
+        int pivot = median3(v, st, m, dr);
+        swap(v[pivot], v[st]);
+        pivot = st;
+        int i = st, j = dr;
+        while(i <= j){
+            while(v[i] < v[pivot]) i++;
+            while(v[j] > v[pivot]) j--;
+            if(i <= j){
+                swap(v[i], v[j]);
+                i++;
+                j--;
+            }
+        }
+        return st;
+    }
+}
+
+int tryPartition(int * const v, const int st, const int dr){
+    if(st < dr){
+        int m = (dr - st)/2 + st;
+        int pivot = median3(v, st, m, dr);
+        swap(v[m], v[pivot]);
+        int i = st, j = dr, d = 0;
+        while (i < j){
+            if(v[i] > v[j])
+                swap(v[i], v[j]);
+            i += d;
+            j -= 1 - d;
+        }
+        return i;
+    }
+}
+
+void introSort(int * const v, int depthLimit, const int st, const int dr){
+    int dimension = dr - st + 1;
+    if (dimension < 16){
+        insertionSortParams(v, st, dr);
+    }
+    else if (depthLimit == 0){
+        int * aux;
+        aux = new int[dr - st + 1];
+        for(int i = 0; i < dr - st + 1; i++)
+            aux[i] = v[st + i];
+        int auxn = n;
+        n = dr - st + 1;
+        heapSort(aux);
+        n = auxn;
+
+        for(int i = 0 ; i < dr - st + 1; i++)
+            v[st +  i] = aux[i];
+        delete [] aux;
+    }
+    else{
+        int p = tryPartition(v, st, dr);
+        introSort(v, depthLimit - 1, 0, p - 1);
+        introSort(v, depthLimit - 1, p + 1, n - 1);
+    }
+}
+
+void introSortCall(int * const v){
+    int depthLimit = floor(log(n));
+    introSort(v, depthLimit, 0, n - 1);
+}
+
+
+void insertionSortParams(int * const v, const int st, const int dr){
+    int key, j;
+
+    for(int i = st + 1; i < dr + 1; i++){
+        j = i - 1;
+        key = v[i];
+        while(j >= 0 && key < v[j]){
+            v[j + 1] = v[j];
+            j--;
+        }
+        v[j + 1] = key;
+    }
+}
+
+void heapSortParams(int * const v, const int st, const int dr){
+
+
+
+
+
+}
+
+
+
+/*
+void introSort(int * const v, int depthLimit, const int st, const int dr){
+    int dimension = dr - st + 1;
+    if (dimension < 16){
+        int * aux;
+        aux = new int[dr - st + 1];
+        for(int i = 0; i < dr - st + 1; i++)
+            aux[i] = v[st + i];
+        int auxn = n;
+        n = dr - st + 1;
+        insertionSort(aux);
+        n = auxn;
+
+        for(int i = 0 ; i < dr - st + 1; i++)
+            v[st +  i] = aux[i];
+        delete [] aux;
+    }
+    else if (depthLimit == 0){
+        int * aux;
+        aux = new int[dr - st + 1];
+        for(int i = 0; i < dr - st + 1; i++)
+            aux[i] = v[st + i];
+        int auxn = n;
+        n = dr - st + 1;
+        heapSort(aux);
+        n = auxn;
+
+        for(int i = 0 ; i < dr - st + 1; i++)
+            v[st +  i] = aux[i];
+        delete [] aux;
+    }
+    else{
+        int p = tryPartition(v, st, dr);
+        introSort(v, depthLimit - 1, 0, p - 1);
+        introSort(v, depthLimit - 1, p + 1, n - 1);
+    }
+}
+*/
