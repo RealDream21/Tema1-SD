@@ -6,7 +6,6 @@
 #include <cmath>
 using namespace std;
 
-ifstream fin("testcase0");
 //ofstream fout("");
 
 const long long VMAX = 1e7;
@@ -62,53 +61,47 @@ long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
 
 int main()
 {
-    fin >> n;
-    if(n > VMAX){
-        cout << "Sortare esuata, vector prea mare " << endl;
-        return -1;
-    }
-    int *v1, *v2, *v3, *v4, *v5;
-    v1 = new int[n]; //radix sort
-    v2 = new int[n]; //merge sort
-    v3 = new int[n]; //shell sort
-    v4 = new int[n]; //sort extra 1
-    v5 = new int[n]; //sort extra 2
-    vcheck = new int[n]; //sortarea standard c++
-
-    long long x;
-    for(int i = 0; i < n; i++){
-        fin >> x;
-        if(x > maxnr){
-            cout << "Numarul " << x << " nu incape in int";
+    long double total_time = 0;
+    string test = "testcase";
+    for(char i ='0'; i <='9'; i++){
+        ifstream fin(test+i);
+        fin >> n;
+        if(n > VMAX){
+            cout << "Sortare esuata, vector prea mare " << endl;
             return -1;
         }
-        else{
-            vcheck[i] = x;
+        int *v1;
+        v1 = new int[n];
+        vcheck = new int[n];
+        long long x;
+        for(int i = 0; i < n; i++){
+            fin >> x;
+            if(x > maxnr){
+                cout << "Numarul " << x << " nu incape in int";
+                return -1;
+            }
+            else{
+                vcheck[i] = x;
+            }
         }
+        copyv(v1, vcheck);
+        sort(vcheck, vcheck + n);
+        clock_t c_start = clock();
+        introSortCall(v1);
+        clock_t c_end = clock();
+        long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
+        total_time += time_elapsed_ms/1000;
+        if(check_sort(v1) == 0){
+            cout << "Sortare esuata la un input" << endl;
+            show(v1);
+            cout << endl;
+        }
+        else{
+            cout << "Passed test " << i << endl;
+        }
+        fin.close();
     }
-
-    copyv(v1, vcheck);
-
-    long double time_elapsed_ms;
-    clock_t c_start, c_end;
-
-    c_start = clock();
-    sort(vcheck, vcheck + n);
-    c_end = clock();
-    time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
-    cout << time_elapsed_ms/1000 << "<--c++ sort" << endl;
-
-    c_start = clock();
-    cout << endl;
-
-    c_end = clock();
-    time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
-    cout << endl;
-    cout << time_elapsed_ms/1000 << "<--mysort" << endl;
-
-
-    cout << check_sort(v1) << endl;
-
+    cout << "total processing time: " << total_time << endl;
 
     return 0;
 }
