@@ -27,6 +27,8 @@ void heapSortParams(int * const, const int, const int);
 ///functii de ajutor
 void merge_sort(int * const, const int, const int);
 void buildHeap(int * const);
+void buildHeapParams(int * const, int * const, const int, const int);
+void rearrangeHeapParams(int * const, const int, const int, const int);
 void heapify(int * const, const int); ///compar cu copiii si schimb cu cel mai mic/cel mai mare in functie de maxHeap sau minHeap
 void pushToHeap(int * const, const int, const int);
 void rearrangeHeap(int * const v, const int);
@@ -81,6 +83,7 @@ int main()
     cout << time_elapsed_ms/1000 << "<--c++ sort" << endl;
 
     c_start = clock();
+    cout << endl;
     introSortCall(v1);
     c_end = clock();
     time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
@@ -319,10 +322,10 @@ int tryPartition(int * const v, const int st, const int dr){
         return i;
     }
 }
-
+/*
 void introSort(int * const v, int depthLimit, const int st, const int dr){
     int dimension = dr - st + 1;
-    if (dimension < 16){
+    if (dimension <= 32){
         insertionSortParams(v, st, dr);
     }
     else if (depthLimit == 0){
@@ -331,13 +334,10 @@ void introSort(int * const v, int depthLimit, const int st, const int dr){
         for(int i = 0; i < dr - st + 1; i++)
             aux[i] = v[st + i];
         int auxn = n;
-        n = dr - st + 1;
         heapSort(aux);
         n = auxn;
-
-        for(int i = 0 ; i < dr - st + 1; i++)
-            v[st +  i] = aux[i];
-        delete [] aux;
+        for(int i = 0; i < dr - st + 1; i++)
+            v[st + i] = aux[i];
     }
     else{
         int p = tryPartition(v, st, dr);
@@ -345,7 +345,7 @@ void introSort(int * const v, int depthLimit, const int st, const int dr){
         introSort(v, depthLimit - 1, p + 1, n - 1);
     }
 }
-
+*/
 void introSortCall(int * const v){
     int depthLimit = floor(log(n));
     introSort(v, depthLimit, 0, n - 1);
@@ -367,45 +367,53 @@ void insertionSortParams(int * const v, const int st, const int dr){
 }
 
 void heapSortParams(int * const v, const int st, const int dr){
-
-
-
-
-
+    int * aux;
+    aux = new int[dr - st + 1];
+    for(int i = 0; i < dr - st + 1; i++)
+        aux[i] = v[st + i];
+    buildHeapParams(aux, v, st, dr);
+    int sfarsit = dr - st;
+    while(sfarsit > 0){
+        swap(aux[0], aux[sfarsit--]);
+        rearrangeHeap(aux, sfarsit);
+    }
+    if(aux[0] > aux[1])
+        swap(aux[0], aux[1]);
+    for(int i = 0; i < dr - st + 1; i++)
+        v[st + i] = aux[i];
 }
 
+void buildHeapParams(int * const v, int * const vref, const int st, const int dr){
+    for(int i = 0; i < dr - st + 1; i++)
+        pushToHeap(v, vref[st + i], i);
+}
 
+void rearrangeHeapParams(int * const v, const int st, const int dr, const int sfarsit){
+    int i = 0;
+    while(i * 2 + 2 < sfarsit){
+        int fiu_st = i * 2 + 1;
+        int fiu_dr = i * 2 + 2;
+        if (v[fiu_st] >= v[fiu_dr] && v[fiu_st] > v[i]){
+            swap(v[i], v[fiu_st]);
+            i = fiu_st;
+        }
+        else if(v[fiu_dr] > v[fiu_st] && v[fiu_dr] > v[i]){
+            swap(v[i], v[fiu_dr]);
+            i = fiu_dr;
+        }
+        else {
+            break;
+        }
+    }
+}
 
-/*
 void introSort(int * const v, int depthLimit, const int st, const int dr){
     int dimension = dr - st + 1;
     if (dimension < 16){
-        int * aux;
-        aux = new int[dr - st + 1];
-        for(int i = 0; i < dr - st + 1; i++)
-            aux[i] = v[st + i];
-        int auxn = n;
-        n = dr - st + 1;
-        insertionSort(aux);
-        n = auxn;
-
-        for(int i = 0 ; i < dr - st + 1; i++)
-            v[st +  i] = aux[i];
-        delete [] aux;
+        insertionSortParams(v, st, dr);
     }
     else if (depthLimit == 0){
-        int * aux;
-        aux = new int[dr - st + 1];
-        for(int i = 0; i < dr - st + 1; i++)
-            aux[i] = v[st + i];
-        int auxn = n;
-        n = dr - st + 1;
-        heapSort(aux);
-        n = auxn;
-
-        for(int i = 0 ; i < dr - st + 1; i++)
-            v[st +  i] = aux[i];
-        delete [] aux;
+        heapSortParams(v, st, dr);
     }
     else{
         int p = tryPartition(v, st, dr);
@@ -413,4 +421,3 @@ void introSort(int * const v, int depthLimit, const int st, const int dr){
         introSort(v, depthLimit - 1, p + 1, n - 1);
     }
 }
-*/
