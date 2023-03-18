@@ -87,22 +87,63 @@ int main()
         copyv(v1, vcheck);
         sort(vcheck, vcheck + n);
         clock_t c_start = clock();
-        introSortCall(v1);
+        sort(v1, v1 + n);
         clock_t c_end = clock();
         long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
         total_time += time_elapsed_ms/1000;
         if(check_sort(v1) == 0){
             cout << "Sortare esuata la un input" << endl;
-            show(v1);
             cout << endl;
         }
         else{
             cout << "Passed test " << i << endl;
         }
-        fin.close();
     }
-    cout << "total processing time: " << total_time << endl;
 
+        for(char j = '1'; j <= '1'; j++){
+        test += j;
+        for(char i ='0'; i <='9'; i++){
+        ifstream fin(test+i);
+        fin >> n;
+        if(n > VMAX){
+            cout << "Sortare esuata, vector prea mare " << endl;
+            continue;
+        }
+        int *v1;
+        v1 = new int[n];
+        vcheck = new int[n];
+        long long x;
+        for(int i = 0; i < n; i++){
+            fin >> x;
+            if(x > maxnr){
+                cout << "Numarul " << x << " nu incape in int";
+                continue;
+            }
+            else{
+                vcheck[i] = x;
+            }
+        }
+        copyv(v1, vcheck);
+        sort(vcheck, vcheck + n);
+        clock_t c_start = clock();
+        sort(v1, v1 + n);
+        clock_t c_end = clock();
+        long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
+        total_time += time_elapsed_ms/1000;
+        if(check_sort(v1) == 0){
+            cout << "Sortare esuata la un input" << endl;
+            cout << endl;
+        }
+        else{
+            cout << "Passed test " << j << i << endl;
+        }
+        fin.close();
+        }
+        test.pop_back();
+        }
+
+    cout << "total processing time: " << total_time << endl;
+    cin >> n;
     return 0;
 }
 
@@ -253,14 +294,15 @@ void show(const int * const v){
         cout << v[i] << " ";
 }
 
-void shellSort(int * v){
-    int gap = 2;
-    while(n/gap){
-        int gap_size = n/gap;
-        for(int i = 0; i + gap_size < n; i++)
-            if(v[i] > v[i + gap_size])
-                swap(v[i], v[i + gap_size]);
-        gap *= 2;
+void shellSort(int * const v){
+    for(int gap_size = n/2; gap_size > 0; gap_size /= 2){
+        for(int i = gap_size; i < n; i++){
+            int aux = v[i];
+            int j;
+            for(j = i; j >= gap_size && v[j - gap_size] > aux; j -= gap_size)
+                v[j] = v[j - gap_size];
+            v[j] = aux;
+        }
     }
 }
 
@@ -333,7 +375,7 @@ int tryPartition(int * const v, const int st, const int dr){
 }
 
 void introSortCall(int * const v){
-    int depthLimit = floor(log(n))/256;
+    int depthLimit = floor(log(n));
     introSort(v, depthLimit, 0, n - 1);
 }
 

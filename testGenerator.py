@@ -1,14 +1,15 @@
 import random as r
+import threading
 
 max_number = 2147483647
-min_sizeof_vector = 10**6
+min_sizeof_vector = 10**7
 max_sizeof_vector = 10**7
-n_testcases = 10
+n_testcases = 20
 
-def trulyRandomTests():
+def trulyRandomTests(start, end):
     global n_testcases
     global max_number
-    for i in range(n_testcases):
+    for i in range(start, end):
         fileName = "testcase" + str(i)
         f = open(fileName, "w")
         N = r.randint(min_sizeof_vector, max_sizeof_vector)
@@ -20,10 +21,10 @@ def trulyRandomTests():
                 f.write('\n')
         f.close()
 
-def closeNumbersTests():
+def closeNumbersTests(start, end):
     global n_testcases
     global max_number
-    for i in range(n_testcases):
+    for i in range(start, end):
         fileName = "testcase" + str(i)
         f = open(fileName, "w")
         N = r.randint(min_sizeof_vector, max_sizeof_vector)
@@ -46,10 +47,10 @@ def closeNumbersTests():
                     break
         f.close()
 
-def repeatingNumbersTests():
+def repeatingNumbersTests(start, end):
     global n_testcases
     global max_number
-    for i in range(n_testcases):
+    for i in range(start, end):
         fileName = "testcase" + str(i)
         f = open(fileName, "w")
         N = r.randint(min_sizeof_vector, max_sizeof_vector)
@@ -70,12 +71,45 @@ print("Pick test type")
 print("1: Truly random numbers")
 print("2: Close numbers")
 print("3: Repeating numbers")
-x = int(input())
+x = 3
 print('generating numbers...')
 if x == 1:
-    trulyRandomTests()
+    t1 = threading.Thread(target = trulyRandomTests, args = (0, 5))
+    t2 = threading.Thread(target = trulyRandomTests, args = (5, 10))
+    t3 = threading.Thread(target = trulyRandomTests, args = (10, 15))
+    t4 = threading.Thread(target = trulyRandomTests, args = (15, n_testcases))
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
 elif x == 2:
-    closeNumbersTests()
+    t1 = threading.Thread(target = closeNumbersTests, args = (0, 5))
+    t2 = threading.Thread(target = closeNumbersTests, args = (5, 10))
+    t3 = threading.Thread(target = closeNumbersTests, args = (10, 15))
+    t4 = threading.Thread(target = closeNumbersTests, args = (15, n_testcases))
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
 elif x == 3:
-    repeatingNumbersTests()
+    t1 = threading.Thread(target = repeatingNumbersTests, args = (0, 5))
+    t2 = threading.Thread(target = repeatingNumbersTests, args = (5, 10))
+    t3 = threading.Thread(target = repeatingNumbersTests, args = (10, 15))
+    t4 = threading.Thread(target = repeatingNumbersTests, args = (15, n_testcases))
+    t1.start()
+    t2.start()
+    t3.start()
+    t4.start()
+    t1.join()
+    t2.join()
+    t3.join()
+    t4.join()
 input('generated numbers')
