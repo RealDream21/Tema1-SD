@@ -87,7 +87,7 @@ int main()
         copyv(v1, vcheck);
         sort(vcheck, vcheck + n);
         clock_t c_start = clock();
-        sort(v1, v1 + n);
+        radixSort(v1, 10);
         clock_t c_end = clock();
         long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
         total_time += time_elapsed_ms/1000;
@@ -126,7 +126,7 @@ int main()
         copyv(v1, vcheck);
         sort(vcheck, vcheck + n);
         clock_t c_start = clock();
-        sort(v1, v1 + n);
+        radixSort(v1, 10);
         clock_t c_end = clock();
         long double time_elapsed_ms = 1000*(c_end-c_start) / CLOCKS_PER_SEC;
         total_time += time_elapsed_ms/1000;

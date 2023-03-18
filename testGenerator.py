@@ -71,7 +71,7 @@ print("Pick test type")
 print("1: Truly random numbers")
 print("2: Close numbers")
 print("3: Repeating numbers")
-x = 3
+x = 2
 print('generating numbers...')
 if x == 1:
     t1 = threading.Thread(target = trulyRandomTests, args = (0, 5))
